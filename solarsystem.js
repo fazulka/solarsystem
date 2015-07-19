@@ -20,22 +20,6 @@
   //scene.add(axes);  
   
   var mouseControls = new THREE.TrackballControls(camera, renderer.domElement);
-  
-  function get_my_JSON (url) {
-    var req = new XMLHttpRequest();
-    req.open("GET", url, true);
-    req.setRequestHeader ("Content-type", "solarsystem/json" );
-    req.onreadystatechange = function(){
-
-      if (req.readyState == 4 && req.status == 200){
-        var response = JSON.parse(req.responseText);
-        document.write(response.name);
-      }
-    }
-    req.send();
-  }
-
-get_my_JSON("data.json");
 
 
   var controls = new function(){
@@ -138,11 +122,7 @@ get_my_JSON("data.json");
     }
     }
 
-  
-
-//takto sa robi objekt..
-
-  //mercury
+   //mercury
   /*var map1 = THREE.ImageUtils.loadTexture("mercurymap.jpg");
   var geometry1 = new THREE.SphereGeometry(0.3,32,32);
   var material1 = new THREE.MeshPhongMaterial();
@@ -168,11 +148,9 @@ get_my_JSON("data.json");
  }
 
   function Planets(obj){
-  
         for (var i = 0; i < obj.planets.lenght; i++) {
         var planet = new planet(obj[i].map, obj[i].geometry, obj[i].position);
         planets.push(planet);
-
     }
   };
 
@@ -205,8 +183,36 @@ toScene(planets);
    skycube = new THREE.Mesh( new THREE.BoxGeometry( 2000, 2000, 2000 ), material );
         
    scene.add( skycube );
+   
+   //get JSON 
+  function loadJSON(callback) {   
 
-  
+    var xobj = new XMLHttpRequest();
+        xobj.overrideMimeType("application/json");
+    xobj.open('GET', 'data.json', true); 
+    xobj.onreadystatechange = function () {
+          if (xobj.readyState == 4 && xobj.status == "200") {
+            // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
+            callback(xobj.responseText);
+          }
+    };
+    xobj.send(null);  
+ }
+ 
+ (function init(){
+  loadJSON(function(response) {
+    var data = JSON.parse(response);
+  });
+ });
+ 
+ /*function load_Json(){
+  $(document).ready(function () {
+    $.getJSON("data.json", function(json){
+      console.log(json);
+  });
+});
+}*/
+
   
   var gui = new dat.GUI();
   var f1 = gui.addFolder('Dir Light');
@@ -251,6 +257,8 @@ toScene(planets);
   
   
   camera.lookAt(scene.position);
+  
+  //rotation for planets around their own axis and around the sun
   function rotation(planets, groups){
     for (var i = 0; i > planets.length; i++) {
       planets[i].rotation.y -= 0.01;
@@ -285,6 +293,8 @@ toScene(planets);
   g_saturn.rotation.y += 0.015;
   g_uranus.rotation.y += 0.023;
   g_neptune.rotation.y += 0.017;*/
+  
+  
   rotation(planets, groups);
   renderer.render( scene, camera ); 
   } 
