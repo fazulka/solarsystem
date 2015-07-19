@@ -184,26 +184,22 @@ toScene(planets);
         
    scene.add( skycube );
    
-   //get JSON 
-  function loadJSON(callback) {   
+   //get JSON object, does not work because of 
+ function get_my_JSON (url) {
+    var req = new XMLHttpRequest();
+    req.open("GET", url, true);
+    req.setRequestHeader ("Content-type", "solarsystem/json" );
+    req.onreadystatechange = function(){
 
-    var xobj = new XMLHttpRequest();
-        xobj.overrideMimeType("application/json");
-    xobj.open('GET', 'data.json', true); 
-    xobj.onreadystatechange = function () {
-          if (xobj.readyState == 4 && xobj.status == "200") {
-            // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
-            callback(xobj.responseText);
-          }
-    };
-    xobj.send(null);  
- }
- 
- (function init(){
-  loadJSON(function(response) {
-    var data = JSON.parse(response);
-  });
- });
+      if (req.readyState == 4 && req.status == 200){
+        var response = JSON.parse(req.responseText);
+        document.write(response.name);
+      }
+    }
+    req.send();
+  }
+
+get_my_JSON("data.json");
  
  /*function load_Json(){
   $(document).ready(function () {
