@@ -136,28 +136,14 @@ get_my_JSON("data.json");
       camera.position.z = e;
     camera.lookAt(scene.position);
     }
-    
-    /*this.updateLightambcolor = function (e) {               
-         ambientLicht.color.setHex(e);
-    }
-    this.visibleAmbient = function (e){
-      ambientLicht.visible = e;
-    }*/
     }
 
-  /*function rotateAboutWorldAxis(object, axis, angle) {
-  var rotationMatrix = new THREE.Matrix4();
-  rotationMatrix.makeRotationAxis( axis.normalize(), angle );
-  var currentPos = new THREE.Vector4(object.position.x, object.position.y, object.position.z, 1);
-  var newPos = currentPos.applyMatrix4(rotationMatrix);
-  object.position.x = newPos.x;
-  object.position.y = newPos.y;
-  object.position.z = newPos.z;
-}  */
+  
 
+//takto sa robi objekt..
 
   //mercury
-  var map1 = THREE.ImageUtils.loadTexture("mercurymap.jpg");
+  /*var map1 = THREE.ImageUtils.loadTexture("mercurymap.jpg");
   var geometry1 = new THREE.SphereGeometry(0.3,32,32);
   var material1 = new THREE.MeshPhongMaterial();
   material1.map = map1;
@@ -167,17 +153,41 @@ get_my_JSON("data.json");
   g_mercury = new THREE.Object3D();
   g_mercury.add(sol);
   g_mercury.add(mercury);
-  scene.add(g_mercury);
+  scene.add(g_mercury);*/
 
-  var planets = [];
+ var planets = [];
+ var groups = [];
 
-  function Planets(data){
+ function planet(map, geometry, position){
+ var map = THREE.ImageUtils.loadTexture(this.map);
+ var geometry = new THREE.SphereGeometry(this.geometry);
+ var material = new THREE.MeshPhongMaterial();
+ material.map = map;
+ var planet = new THREE.Mesh(geometry, material);
+ planet.position.set(this.position);
+ }
 
-    for (var i = Things.length - 1; i >= 0; i--) {
-      Things[i]
-    };
+  function Planets(obj){
+  
+        for (var i = 0; i < obj.planets.lenght; i++) {
+        var planet = new planet(obj[i].map, obj[i].geometry, obj[i].position);
+        planets.push(planet);
+
+    }
+  };
+
+function toScene(arr){
+  for(i = 1; i < arr.length ; i++){
+    group = new THREE.Object3D();
+    group.add(arr[0]);
+    group.add(arr[i]);
+    scene.add(group);
+    groups.push(group);
   }
+};
 
+Planets(data);
+toScene(planets);
 
   var url = ["yale8.png","yale8.png","yale8.png","yale8.png","yale8.png","yale8.png",];
   var textureCube = THREE.ImageUtils.loadTextureCube( url );
@@ -241,12 +251,21 @@ get_my_JSON("data.json");
   
   
   camera.lookAt(scene.position);
+  function rotation(planets, groups){
+    for (var i = 0; i > planets.length; i++) {
+      planets[i].rotation.y -= 0.01;
+    }
+    for (var i = 0; i > groups.length; i++) {
+      groups[i].rotation.y -= 0.08;
+    }
+  };
   
   function render() { 
   mouseControls.update();
   requestAnimationFrame( render );  
   //rotations
-  sol.rotation.y -= 0.005;
+  
+  /*sol.rotation.y -= 0.005;
   mercury.rotation.y -=0.01;
   venus.rotation.y -=0.01;
   earth.rotation.y -=0.01;
@@ -265,8 +284,8 @@ get_my_JSON("data.json");
   g_jupiter.rotation.y += 0.024;
   g_saturn.rotation.y += 0.015;
   g_uranus.rotation.y += 0.023;
-  g_neptune.rotation.y += 0.017;
-  stats.update();
+  g_neptune.rotation.y += 0.017;*/
+  rotation(planets, groups);
   renderer.render( scene, camera ); 
   } 
   
