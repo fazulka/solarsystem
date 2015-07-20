@@ -121,70 +121,8 @@
     camera.lookAt(scene.position);
     }
     }
-
-   //mercury
-  /*var map1 = THREE.ImageUtils.loadTexture("mercurymap.jpg");
-  var geometry1 = new THREE.SphereGeometry(0.3,32,32);
-  var material1 = new THREE.MeshPhongMaterial();
-  material1.map = map1;
-  var mercury = new THREE.Mesh( geometry1, material1 ); 
-  mercury.position.set(91.63,0,0);
-
-  g_mercury = new THREE.Object3D();
-  g_mercury.add(sol);
-  g_mercury.add(mercury);
-  scene.add(g_mercury);*/
-
- var planets = [];
- var groups = [];
-
- function planet(map, geometry, position){
- var map = THREE.ImageUtils.loadTexture(this.map);
- var geometry = new THREE.SphereGeometry(this.geometry);
- var material = new THREE.MeshPhongMaterial();
- material.map = map;
- var planet = new THREE.Mesh(geometry, material);
- planet.position.set(this.position);
- }
-
-  function Planets(obj){
-        for (var i = 0; i < obj.planets.lenght; i++) {
-        var planet = new planet(obj[i].map, obj[i].geometry, obj[i].position);
-        planets.push(planet);
-    }
-  };
-
-function toScene(arr){
-  for(i = 1; i < arr.length ; i++){
-    group = new THREE.Object3D();
-    group.add(arr[0]);
-    group.add(arr[i]);
-    scene.add(group);
-    groups.push(group);
-  }
-};
-
-Planets(data);
-toScene(planets);
-
-  var url = ["yale8.png","yale8.png","yale8.png","yale8.png","yale8.png","yale8.png",];
-  var textureCube = THREE.ImageUtils.loadTextureCube( url );
-  var shader = THREE.ShaderLib[ "cube" ];
-  shader.uniforms[ "tCube" ].value = textureCube;
-
-  var material = new THREE.ShaderMaterial( {
-          fragmentShader: shader.fragmentShader,
-          vertexShader: shader.vertexShader,
-          uniforms: shader.uniforms,
-          depthWrite: false,
-          side: THREE.BackSide
-        } );
-
-   skycube = new THREE.Mesh( new THREE.BoxGeometry( 2000, 2000, 2000 ), material );
-        
-   scene.add( skycube );
-   
-   //get JSON object, does not work because of 
+    
+   //function for getting JSON and parse it into the object
  function get_my_JSON (url) {
     var req = new XMLHttpRequest();
     req.open("GET", url, true);
@@ -209,7 +147,73 @@ get_my_JSON("data.json");
 });
 }*/
 
-  
+   //mercury
+  /*var map1 = THREE.ImageUtils.loadTexture("mercurymap.jpg");
+  var geometry1 = new THREE.SphereGeometry(0.3,32,32);
+  var material1 = new THREE.MeshPhongMaterial();
+  material1.map = map1;
+  var mercury = new THREE.Mesh( geometry1, material1 ); 
+  mercury.position.set(91.63,0,0);
+
+  g_mercury = new THREE.Object3D();
+  g_mercury.add(sol);
+  g_mercury.add(mercury);
+  scene.add(g_mercury);*/
+
+//array holding objects of planets
+ var planets = [];
+ //array holding groups of planets, needed for rotation
+ var groups = [];
+
+//prototype of the planet
+ function planet(map, geometry, position){
+ var map = THREE.ImageUtils.loadTexture(this.map);
+ var geometry = new THREE.SphereGeometry(this.geometry);
+ var material = new THREE.MeshPhongMaterial();
+ material.map = map;
+ var planet = new THREE.Mesh(geometry, material);
+ planet.position.set(this.position);
+ }
+
+//function for creation objects of planets, argument is json object
+  function Planets(obj){
+        for (var i = 0; i < obj.planets.lenght; i++) {
+        var planet = new planet(obj[i].map, obj[i].geometry, obj[i].position);
+        planets.push(planet);
+    }
+  }
+
+//function for making new groups with the sun and adding planets to scene
+function toScene(arr){
+  for(i = 1; i < arr.length ; i++){
+    group = new THREE.Object3D();
+    group.add(arr[0]);
+    group.add(arr[i]);
+    scene.add(group);
+    groups.push(group);
+  }
+}
+
+Planets(data);
+toScene(planets);
+
+  var url = ["yale8.png","yale8.png","yale8.png","yale8.png","yale8.png","yale8.png",];
+  var textureCube = THREE.ImageUtils.loadTextureCube( url );
+  var shader = THREE.ShaderLib[ "cube" ];
+  shader.uniforms[ "tCube" ].value = textureCube;
+
+  var material = new THREE.ShaderMaterial( {
+          fragmentShader: shader.fragmentShader,
+          vertexShader: shader.vertexShader,
+          uniforms: shader.uniforms,
+          depthWrite: false,
+          side: THREE.BackSide
+        } );
+
+   skycube = new THREE.Mesh( new THREE.BoxGeometry( 2000, 2000, 2000 ), material );
+        
+   scene.add( skycube );
+   
   var gui = new dat.GUI();
   var f1 = gui.addFolder('Dir Light');
   f1.add(controls, 'lightx', -100,600).onChange(controls.updateLight1x);
@@ -254,15 +258,18 @@ get_my_JSON("data.json");
   
   camera.lookAt(scene.position);
   
-  //rotation for planets around their own axis and around the sun
-  function rotation(planets, groups){
+  //rotation for planets around their own axis
+  function p_rotation(planets){
     for (var i = 0; i > planets.length; i++) {
       planets[i].rotation.y -= 0.01;
     }
+  }
+  //rotation of planets around the sun
+  function g_rotation(groups){
     for (var i = 0; i > groups.length; i++) {
       groups[i].rotation.y -= 0.08;
     }
-  };
+  }
   
   function render() { 
   mouseControls.update();
@@ -290,8 +297,8 @@ get_my_JSON("data.json");
   g_uranus.rotation.y += 0.023;
   g_neptune.rotation.y += 0.017;*/
   
-  
-  rotation(planets, groups);
+  p_rotation(planets);
+  g_rotation(groups);
   renderer.render( scene, camera ); 
   } 
   
